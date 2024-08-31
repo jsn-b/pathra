@@ -1,0 +1,107 @@
+@font-face {
+    font-family: 'jdf';
+    src: url("/font.otf");
+}
+
+* {
+    font-family: 'jdf', sans-serif;
+    color: white;
+    box-sizing: border-box; /* Ensure padding and border are included in width and height */
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #000;
+    background-image: url("/space.jpg");
+    background-size: cover; /* Cover the entire background */
+    background-position: center; /* Center the background image */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure body takes up the full viewport height */
+}
+
+h1 {
+    text-align: center;
+    margin: 1em 0; /* Add margin for spacing */
+}
+
+input, button {
+    font-size: 1em; /* Use relative font size */
+    padding: 0.5em; /* Add padding for better touch interaction */
+    width: 100%; /* Make inputs and buttons full width */
+    box-sizing: border-box; /* Ensure padding is included in width */
+}
+
+input {
+    background-color: transparent;
+    border: 1px solid #fff;
+    border-radius: 5px;
+    color: #fff;
+    margin-bottom: 1em; /* Add margin for spacing between inputs */
+}
+
+button {
+    background-image: linear-gradient(to right, #FF0A6C, #2D27FF);
+    border-radius: 10px;
+    transition: all 0.4s ease;
+    -webkit-transition: all 0.4s ease;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin: 0.5em auto; /* Center buttons and add margin */
+    display: block;
+}
+
+button:hover {
+    background-image: linear-gradient(to right, #FF0A6C, #FF0A6C);
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%; /* Ensure table uses full width */
+}
+
+th, td {
+    padding: 0.5em;
+    text-align: left;
+}
+
+footer {
+    color: #fff;
+    text-align: center;
+    padding: 1em;
+    position: relative; /* Allow footer to be in normal document flow */
+    width: 100%;
+    margin-top: auto; /* Push footer to the bottom of the page */
+}
+
+/* Responsive Styles */
+@media only screen and (max-width: 600px) {
+    h1 {
+        font-size: 1.5em; /* Adjust font size for mobile */
+    }
+
+    button {
+        font-size: 0.9em; /* Adjust font size for buttons */
+        padding: 0.7em; /* Adjust padding for mobile buttons */
+        background-image: linear-gradient(to right, #FF0A6C, #2D27FF);
+        border-radius: 10px;
+        transition: all 0.4s ease;
+        -webkit-transition: all 0.4s ease;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin: 0.5em auto; /* Center buttons and add margin */
+        display: block;
+    }
+
+    input {
+        font-size: 0.9em; /* Adjust font size for input fields */
+        padding: 0.7em; /* Adjust padding for mobile inputs */
+    }
+
+    table {
+        font-size: 0.9em; /* Adjust font size for table text */
+    }
+}

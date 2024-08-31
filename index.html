@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pathra</title>
+    <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+    <script src="script.js" defer></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .fade-in {
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+    
+        .fade-in.visible {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="fade-in">Pathra</h1>
+    <table class="fade-in">
+        <tr>
+            <td><label for="startDate">Start Date:</label></td>
+            <td><input type="date" id="startDate"></td>
+        </tr>
+        <tr>
+            <td><label for="odometer">Odometer:</label></td>
+            <td><input type="number" id="odometer"></td>
+        </tr>
+        <tr>
+            <td><label for="travelDistance">Travel Distance:</label></td>
+            <td><input type="number" id="travelDistance"></td>
+        </tr>
+        <tr>
+            <td><label for="homeDistance">Home Distance:</label></td>
+            <td><input type="number" id="homeDistance"></td>
+        </tr>
+    </table>  
+    
+    <button class="fade-in" onclick="addRow()">Add Row</button>
+    <button class="fade-in" onclick="removeLastRow()">Remove Last Row</button>
+    <button class="fade-in" onclick="finishTable()">Export to PDF</button>
+
+    <br><br>
+
+    <table id="dynamicTable" class="fade-in" border="1">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Travel Distance</th>
+                <th>Initial Reading</th>
+                <th>Total Distance</th>
+                <th>Home Distance</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <footer>
+        <div class="footer-content">
+            <p>Made for varun sbvm staff</p>
+        </div>
+    </footer>
+</body>
+</html>

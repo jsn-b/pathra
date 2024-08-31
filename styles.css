@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'jdf';
-    src: url("/font.otf");
+    src: url("./font.otf") format("opentype");
 }
 
 * {
@@ -13,7 +13,6 @@
 
 body {
     background-color: #000;
-    background-image: url("/space.jpg");
     background-size: cover; /* Cover the entire background */
     background-position: center; /* Center the background image */
     display: flex;

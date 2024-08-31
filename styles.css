@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'jdf';
-    src: url("./font.otf") format("opentype");
+    src: url("./font.woff2");
 }
 
 * {

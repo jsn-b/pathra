@@ -3,6 +3,8 @@ let currentValue = 0;
 let rowCount = 1;
 let currentDate; // Define global variable
 let previousTotalDistance = 0; // Variable to keep track of the previous total distance
+let previousHomeDistance = 0; // Variable to keep track of the previous home distance
+let previousRowDate = null; // Variable to keep track of the previous row date
 
 window.addEventListener('load', function() {
     const fadeElements = document.querySelectorAll('.fade-in');
@@ -28,7 +30,13 @@ window.addEventListener('load', function() {
         event.preventDefault();
     });
 
-   
+    // Add event listener to date input field
+    document.getElementById('startDate').addEventListener('change', function() {
+        document.getElementById('odometer').value = ''; // Clear odometer value
+        document.getElementById('travelDistance').value = '';
+        document.getElementById('odometer').disabled = false; // Enable odometer field
+        alert("Update odometer value also");
+    });
 });
 
 function getFirstDayOfCurrentMonth() {
@@ -52,9 +60,11 @@ function addRow() {
     let odometer = parseInt(document.getElementById("odometer").value) || 0;
     let travelDistance = parseInt(document.getElementById("travelDistance").value) || 0;
     let homeDistance = parseInt(document.getElementById("homeDistance").value) || 0;
+    let dateInput = document.getElementById("startDate").value; // Get the date input value
 
+    // Validate input values
     if (travelDistance === 0) {
-        alert("Check Travel distance");
+        alert("Check Travel Distance");
         return;
     }
     if (homeDistance === 0) {
@@ -62,6 +72,16 @@ function addRow() {
         return;
     }
 
+    // Check if a new date has been provided
+    if (dateInput) {
+        let newDate = new Date(dateInput);
+        if (newDate > currentDate) {
+            currentDate = newDate; // Update the current date to the new date
+            previousTotalDistance = odometer;
+            previousTotalDistance = previousTotalDistance - previousHomeDistance;
+        }
+        document.getElementById("odometer").disabled = false; // Enable odometer field
+    }
     let randomHomeDistance = getRandomInt(1, homeDistance);
     let formattedDate = formatter(currentDate);
 
@@ -76,37 +96,62 @@ function addRow() {
 
     cell1.innerHTML = formattedDate;
     cell2.innerHTML = travelDistance;
+    cell5.innerHTML = randomHomeDistance;
+    if(previousRowDate){
+        currentDate = new Date(previousRowDate.split('-').reverse().join('-'));
+        currentDate.setDate(currentDate.getDate() + 1); // Start from the next day
+        cell1.innerHTML = currentDate;
+    }
 
     let initialReading;
     if (rowCount === 1) {
         initialReading = odometer;
-        previousTotalDistance = initialReading;
     } else {
-        initialReading = previousTotalDistance;
+        initialReading = previousTotalDistance + previousHomeDistance;
     }
 
     cell3.innerHTML = initialReading;
 
-    let totalDistance = travelDistance + previousTotalDistance;
+    let totalDistance = travelDistance + initialReading;
     cell4.innerHTML = totalDistance;
 
-    cell5.innerHTML = randomHomeDistance;
-
+    // Update global variables
     currentValue += travelDistance + randomHomeDistance;
-    previousTotalDistance = totalDistance + randomHomeDistance;
+    previousHomeDistance = randomHomeDistance; // Store the last random home distance
+    previousTotalDistance = totalDistance;
     currentDate.setDate(currentDate.getDate() + 1);
-    document.getElementById("odometer").disabled = true;
     document.getElementById("travelDistance").value = "";
     rowCount++;
 }
+
 
 function removeLastRow() {
     let table = document.getElementById("dynamicTable").getElementsByTagName('tbody')[0];
     let rowCount = table.rows.length;
 
     if (rowCount > 0) {
+        let lastRow = table.rows[rowCount - 1];
+        let lastTravelDistance = parseInt(lastRow.cells[1].innerHTML);
+        let lastRandomHomeDistance = parseInt(lastRow.cells[4].innerHTML);
+
+        previousTotalDistance -= lastTravelDistance;
+        currentValue -= (lastTravelDistance + lastRandomHomeDistance);
+        previousRowDate = lastRow.cells[0].innerHTML;
         table.deleteRow(rowCount - 1);
         rowCount--;
+
+        if (rowCount === 0) {
+            document.getElementById("odometer").disabled = false;
+            previousTotalDistance = 0;
+            previousHomeDistance = 0;
+            currentValue = 0;
+            previousRowDate = null; 
+        } else {
+            let newLastRow = table.rows[rowCount - 1];
+            previousTotalDistance = parseInt(newLastRow.cells[3].innerHTML);
+            previousHomeDistance = parseInt(newLastRow.cells[4].innerHTML);
+            previousRowDate = newLastRow.cells[0].innerHTML; // Update previousRowDate
+        }
     } else {
         alert("No rows to remove.");
     }
@@ -143,54 +188,46 @@ function finishTable() {
     function addHeaders() {
         doc.setFontSize(12);
         doc.setFont("helvetica", "bold");
-        doc.text(`1. Home Distance = (present row Initial Reading - upper row Final Distance)`, marginLeft, y);
-
-        y += rowHeight;
-
         doc.text("Date", marginLeft, y);
         doc.text("Travel Distance", marginLeft + colWidths[0], y);
         doc.text("Initial Reading", marginLeft + colWidths[0] + colWidths[1], y);
-        doc.text("Final Reading", marginLeft + colWidths[0] + colWidths[1] + colWidths[2], y);
+        doc.text("Total Distance", marginLeft + colWidths[0] + colWidths[1] + colWidths[2], y);
         doc.text("Home Distance", marginLeft + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y);
-
         y += rowHeight;
     }
 
-    addHeaders(); // Add headers for the first page
+    // Function to add rows
+    function addRows() {
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
 
-    rows.forEach(row => {
-        let cells = row.querySelectorAll("td");
-        let text = [
-            cells[0].innerText,
-            cells[1].innerText,
-            cells[2].innerText,
-            cells[3].innerText,
-            cells[4].innerText
-        ];
+        rows.forEach(row => {
+            if (y + rowHeight > pageHeight) {
+                doc.addPage();
+                y = marginTop;
+                addHeaders();
+            }
 
-        // Check if we need a new page
-        if (y + rowHeight > pageHeight) {
-            doc.addPage();
-            y = marginTop;
-            addHeaders(); // Add headers for the new page
-        }
+            let cells = row.querySelectorAll("td");
+            cells.forEach((cell, index) => {
+                doc.text(cell.innerText, marginLeft + colWidths.slice(0, index).reduce((a, b) => a + b, 0), y);
+            });
 
-        text.forEach((item, index) => {
-            doc.text(item.toString(), marginLeft + index * colWidths[index], y);
+            y += rowHeight;
         });
+    }
 
-        y += rowHeight;
-    });
-
+    addHeaders();
+    addRows();
     let fileName = "Pathra " + new Date().toISOString().split('T')[0] + ".pdf";
     doc.save(fileName);
 }
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js').then(function(registration) {
-      console.log('ServiceWorker registration successful with scope: ', registration.scope);
-    }, function(error) {
-      console.log('ServiceWorker registration failed: ', error);
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/sw.js').then(function(registration) {
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      }, function(error) {
+        console.log('ServiceWorker registration failed: ', error);
+      });
     });
-  });
-}
+  }
